@@ -1,6 +1,7 @@
 import os
 import requests
-from bs4 import BeautifulSoup 
+from bs4 import BeautifulSoup
+from concurrent.futures import ThreadPoolExecutor
 
 def create_url(vars:list,stats:list,depths:list):
     urls = []
@@ -18,31 +19,35 @@ def get_href(url):
 
 def create_download_url(vars:list,stats:list,depths:list):
     urls = create_url(vars,stats,depths)
-    hrefs = []
-    urls_to_download =[]
+    download_links = []
     for url in urls:
-        href = get_href(url)
-        hrefs = hrefs + href
-    
-    for url in urls:
+        hrefs = get_href(url)
         for href in hrefs:
-            urls_to_download.append((url+href))
-    return urls_to_download
+            download_links.append(url+href)
+    return  download_links
 
-def create_folders(vars:list,depths:list):
-    for var in vars:
-        for depth in depths:
-            os.makedirs(f'output/{var}/{depth}',exist_ok= True)
+def create_folders(var,depth):
+    os.makedirs(f'output/{var}/{depth}',exist_ok= True)
     return None
 
-def check_if_exist(download_path):
-    if os.path.isfile(download_path):
-        print(download_path,"already downloaded")
-        return True
-    else:
-        return False
+def download_file(url):
+    parts = url.split("/")
+    var =parts[-4]
+    depth = parts[-2]
+    filename = parts[-1]
+    path = f"output/{var}/{depth}/{filename}"
+    create_folders(var,depth)
+    if os.path.isfile(path):
+        print(f"{filename} Already donwloaded")
+        return
+    
+    try:
+        reponse  = requests.get(url)
+        with open(path,'wb') as f:
+            f.write(reponse.content)
+        print(f"{var}_{depth}_{filename} Downloaded")
 
+    except Exception as e:
+        print(f"Error trying to download {path} \n {e}")
 
-x = check_if_exist('output/clay/5_15/lat4849_lon-112-111.tif')
-print(x)
 
