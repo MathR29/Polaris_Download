@@ -1,5 +1,7 @@
 import os
+import math
 import requests
+import pandas as pd
 from bs4 import BeautifulSoup
 from concurrent.futures import ThreadPoolExecutor
 
@@ -25,6 +27,28 @@ def create_download_url(vars:list,stats:list,depths:list):
         for href in hrefs:
             download_links.append(url+href)
     return  download_links
+
+def coords_to_file_name(df_path:str = "coords.csv"):
+    df = pd.read_csv(df_path)
+    
+    df["lat_inf"] = df["lat"].apply(math.floor)
+    df["lat_sup"] = df["lat"].apply(lambda x: math.ceil(x) if x != int(x) else int(x) + 1)
+    df["long_inf"] = df["long"].apply(math.floor)
+    df["long_sup"] = df["long"].apply(lambda x: math.ceil(x) if x != int(x) else int(x) + 1)
+    
+    df = df.assign(
+        file_name = lambda x :
+            "lat" + x.lat_inf.astype(str) + x.lat_sup.astype(str)
+            +"_lon" + x.long_inf.astype(str) + x.long_sup.astype(str).astype(str) + ".tif"
+    )
+    return set(df["file_name"])
+
+def create_url_using_coords(vars:list,stats:list,depths:list):
+    download_links = []
+    urls = create_url(vars,stats,depths)
+    file_names = coords_to_file_name()
+    download_links = [url + file_name for url in urls for file_name in file_names]
+    return download_links
 
 def create_folders(var,depth):
     os.makedirs(f'output/{var}/{depth}',exist_ok= True)
