@@ -60,7 +60,7 @@ def download_file(url):
     var =parts[-4]
     depth = parts[-2]
     filename = parts[-1]
-    path = f"output/{var}/{depth}/{filename}"
+    path = f"output/{stat}/{var}/{depth}/{filename}"
     create_folders(stat,var,depth)
     if os.path.isfile(path):
         print(f"{filename} Already donwloaded")

@@ -3,9 +3,9 @@ from concurrent.futures import ThreadPoolExecutor
 #DONE:"sand",bd","n","theta_r","lambda","ph","om","clay","silt","alpha","ksat"
 #IN LINE:",,
 
-vars = []
+vars = ["sand","bd","n","theta_r","lambda","ph","om","clay","silt","alpha","ksat"]
 
-stats = ["mean"]
+stats = ["p5","p95"]
 
 depths = ["0_5","5_15","15_30","30_60","60_100","100_200"]
 
