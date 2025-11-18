@@ -50,17 +50,18 @@ def create_url_using_coords(vars:list,stats:list,depths:list):
     download_links = [url + file_name for url in urls for file_name in file_names]
     return download_links
 
-def create_folders(var,depth):
-    os.makedirs(f'output/{var}/{depth}',exist_ok= True)
+def create_folders(stat,var,depth):
+    os.makedirs(f'output/{stat}/{var}/{depth}',exist_ok= True)
     return None
 
 def download_file(url):
     parts = url.split("/")
+    stat = parts[-3]
     var =parts[-4]
     depth = parts[-2]
     filename = parts[-1]
     path = f"output/{var}/{depth}/{filename}"
-    create_folders(var,depth)
+    create_folders(stat,var,depth)
     if os.path.isfile(path):
         print(f"{filename} Already donwloaded")
         return
